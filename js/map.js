@@ -1,6 +1,6 @@
 // ============================================
 // map.js — Google Maps live GPS tracking
-// Shows Car-1 dot moving in real time
+// Uses AdvancedMarkerElement (non-deprecated)
 // ============================================
 
 let map = null;
@@ -8,12 +8,14 @@ let car1Marker = null;
 let destinationMarker = null;
 let mapReady = false;
 
-// Called automatically by Google Maps script
-function initMap() {
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: { lat: 30.0444, lng: 31.2357 }, // Default: Cairo
+async function initMap() {
+  const { Map } = await google.maps.importLibrary('maps');
+  const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
+
+  map = new Map(document.getElementById('map'), {
+    center: { lat: 30.0444, lng: 31.2357 },
     zoom: 15,
-    styles: mapDarkStyle(),
+    mapId: 'v2v_map',
     disableDefaultUI: false,
     zoomControl: true,
     mapTypeControl: false,
@@ -22,89 +24,64 @@ function initMap() {
   });
 
   // Car-1 marker — blue dot
-  car1Marker = new google.maps.Marker({
+  const car1Dot = document.createElement('div');
+  car1Dot.style.cssText = `
+    width: 18px; height: 18px;
+    background: #2563EB;
+    border: 3px solid #BFDBFE;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(37,99,235,0.6);
+  `;
+
+  car1Marker = new AdvancedMarkerElement({
     map,
+    position: { lat: 30.0444, lng: 31.2357 },
     title: 'Car-1',
-    icon: {
-      path: google.maps.SymbolPath.CIRCLE,
-      scale: 10,
-      fillColor: '#2563EB',
-      fillOpacity: 1,
-      strokeColor: '#BFDBFE',
-      strokeWeight: 2
-    }
+    content: car1Dot
   });
 
   mapReady = true;
 }
 
-// Update Car-1 position on map
 function updateCarPosition(lat, lng) {
-  if (!mapReady) return;
-
+  if (!mapReady || !car1Marker) return;
   const pos = { lat: parseFloat(lat), lng: parseFloat(lng) };
-
-  car1Marker.setPosition(pos);
+  car1Marker.position = pos;
   map.panTo(pos);
-
-  // Update coords display
   document.getElementById('gps-coords').textContent =
-    `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    `${parseFloat(lat).toFixed(6)}, ${parseFloat(lng).toFixed(6)}`;
 }
 
-// Show destination pin on map
-function setDestinationOnMap(lat, lng, label) {
+async function setDestinationOnMap(lat, lng, label) {
   if (!mapReady) return;
+  const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
 
-  if (destinationMarker) destinationMarker.setMap(null);
+  if (destinationMarker) destinationMarker.map = null;
 
-  destinationMarker = new google.maps.Marker({
+  const pin = document.createElement('div');
+  pin.style.cssText = `
+    width: 14px; height: 14px;
+    background: #16A34A;
+    border: 2px solid #BBF7D0;
+    border-radius: 50%;
+  `;
+
+  destinationMarker = new AdvancedMarkerElement({
     map,
     position: { lat, lng },
     title: label,
-    icon: {
-      path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-      scale: 6,
-      fillColor: '#16A34A',
-      fillOpacity: 1,
-      strokeColor: '#BBF7D0',
-      strokeWeight: 1.5
-    }
+    content: pin
   });
 }
 
-// Flash marker red on accident
 function flashAccidentMarker() {
   if (!mapReady || !car1Marker) return;
-
   let isRed = false;
+  const dot = car1Marker.content;
   const interval = setInterval(() => {
     isRed = !isRed;
-    car1Marker.setIcon({
-      path: google.maps.SymbolPath.CIRCLE,
-      scale: 12,
-      fillColor: isRed ? '#DC2626' : '#FF6B6B',
-      fillOpacity: 1,
-      strokeColor: '#FCA5A5',
-      strokeWeight: 2
-    });
+    dot.style.background = isRed ? '#DC2626' : '#FF6B6B';
+    dot.style.boxShadow = `0 0 12px rgba(220,38,38,0.8)`;
   }, 400);
-
-  // Stop flashing after 10 seconds
   setTimeout(() => clearInterval(interval), 10000);
-}
-
-// Dark map style matching app theme
-function mapDarkStyle() {
-  return [
-    { elementType: 'geometry', stylers: [{ color: '#111827' }] },
-    { elementType: 'labels.text.stroke', stylers: [{ color: '#0A0F1E' }] },
-    { elementType: 'labels.text.fill', stylers: [{ color: '#94A3B8' }] },
-    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1C2539' }] },
-    { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#1E2D45' }] },
-    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#1E3A5F' }] },
-    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0A1628' }] },
-    { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-    { featureType: 'transit', stylers: [{ visibility: 'off' }] }
-  ];
 }
