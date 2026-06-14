@@ -2,7 +2,7 @@
 // sw.js — Service Worker
 // ============================================
 
-const CACHE_NAME = 'v2v-app-v1';
+const CACHE_NAME = 'v2v-app-v2';
 
 // Only cache files that actually exist
 const FILES_TO_CACHE = [
