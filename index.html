@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A0F1E" />
+  <meta name="description" content="V2V Road Safety System — Vehicle to Vehicle Communication" />
+  <title>V2V Safety</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Google Maps -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDz9sHM2tAWkrWcXcCr4XVfORoMNZEn8WY&callback=initMap">
+  </script>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ========== LOGIN SCREEN ========== -->
+  <div id="screen-login" class="screen active">
+    <div class="login-wrap">
+      <div class="logo-mark">
+        <span class="logo-v">V2V</span>
+        <span class="logo-sub">Road Safety System</span>
+      </div>
+
+      <div class="login-card">
+        <h1>Sign in</h1>
+        <p class="login-hint">Enter your credentials to access the vehicle dashboard.</p>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+
+        <div id="login-error" class="error-msg hidden"></div>
+
+        <button id="btn-login" class="btn-primary">Sign in</button>
+        <button id="btn-register" class="btn-ghost">Create account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== DASHBOARD SCREEN ========== -->
+  <div id="screen-dashboard" class="screen hidden">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="topbar-logo">V2V</span>
+        <span id="status-badge" class="status-badge idle">IDLE</span>
+      </div>
+      <div class="topbar-right">
+        <span id="user-email" class="user-email"></span>
+        <button id="btn-logout" class="btn-icon">Sign out</button>
+      </div>
+    </header>
+
+    <!-- Alert banner — hidden by default -->
+    <div id="alert-banner" class="alert-banner hidden">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-text">
+        <span id="alert-title" class="alert-title"></span>
+        <span id="alert-desc" class="alert-desc"></span>
+      </div>
+      <button id="alert-close" class="alert-close">✕</button>
+    </div>
+
+    <!-- Accident overlay — hidden by default -->
+    <div id="accident-overlay" class="accident-overlay hidden">
+      <div class="accident-card">
+        <div class="accident-icon">🚨</div>
+        <h2>Accident Detected</h2>
+        <p>Car-1 has stopped. Emergency services have been notified.</p>
+        <div id="accident-location" class="accident-location"></div>
+        <a id="accident-maps-link" href="#" target="_blank" class="btn-primary">Open in Google Maps</a>
+        <button id="accident-dismiss" class="btn-ghost">Dismiss</button>
+      </div>
+    </div>
+
+    <main class="dashboard-grid">
+
+      <!-- LEFT COLUMN -->
+      <div class="left-col">
+
+        <!-- Auth card -->
+        <div class="card" id="card-auth">
+          <div class="card-header">
+            <span class="card-label">Step 1</span>
+            <h2 class="card-title">Driver Authentication</h2>
+          </div>
+          <p class="card-desc">Place your finger on the sensor to verify identity before starting.</p>
+          <div id="fingerprint-area" class="fingerprint-area">
+            <div id="fp-icon" class="fp-icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 8C19.85 8 10 17.85 10 30C10 42.15 19.85 52 32 52" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M32 8C44.15 8 54 17.85 54 30C54 38 49.5 44.9 43 48.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M32 18C25.37 18 20 23.37 20 30C20 36.63 25.37 42 32 42" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M32 18C38.63 18 44 23.37 44 30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M32 28V32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="32" cy="30" r="3" fill="currentColor"/>
+              </svg>
+            </div>
+            <span id="fp-label" class="fp-label">Tap to scan fingerprint</span>
+          </div>
+          <div id="auth-status" class="auth-status hidden">
+            <span class="auth-check">✓</span> Identity verified
+          </div>
+        </div>
+
+        <!-- Destination card -->
+        <div class="card" id="card-destination">
+          <div class="card-header">
+            <span class="card-label">Step 2</span>
+            <h2 class="card-title">Set Destination</h2>
+          </div>
+          <div class="field">
+            <input type="text" id="destination-input" placeholder="Enter destination address..." />
+          </div>
+          <div id="dest-status" class="dest-status hidden">
+            <span class="auth-check">✓</span> <span id="dest-name"></span>
+          </div>
+        </div>
+
+        <!-- Start card -->
+        <div class="card" id="card-start">
+          <div class="card-header">
+            <span class="card-label">Step 3</span>
+            <h2 class="card-title">Start Vehicle</h2>
+          </div>
+          <p class="card-desc">Both vehicles will begin moving after confirmation.</p>
+
+          <div class="field">
+            <label for="esp-ip">Car-1 IP Address</label>
+            <input type="text" id="esp-ip" placeholder="192.168.1.x" value="192.168.1.100" />
+          </div>
+
+          <button id="btn-start" class="btn-primary btn-start" disabled>
+            <span class="btn-start-icon">▶</span>
+            Start Convoy
+          </button>
+          <button id="btn-stop" class="btn-danger hidden">
+            ■ Emergency Stop
+          </button>
+        </div>
+
+        <!-- Vehicle status card -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Vehicle Status</h2>
+          </div>
+          <div class="status-grid">
+            <div class="status-item">
+              <span class="status-label">Car-1</span>
+              <span id="car1-status" class="status-value idle">Idle</span>
+            </div>
+            <div class="status-item">
+              <span class="status-label">Car-2</span>
+              <span id="car2-status" class="status-value idle">Idle</span>
+            </div>
+            <div class="status-item">
+              <span class="status-label">Alert Level</span>
+              <span id="alert-level" class="status-value idle">None</span>
+            </div>
+            <div class="status-item">
+              <span class="status-label">Last Event</span>
+              <span id="last-event" class="status-value idle">—</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN — Map -->
+      <div class="right-col">
+        <div class="card map-card">
+          <div class="card-header">
+            <h2 class="card-title">Live GPS Tracking</h2>
+            <span id="gps-coords" class="gps-coords">Waiting for signal...</span>
+          </div>
+          <div id="map" class="map-container"></div>
+        </div>
+
+        <!-- Event log -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Event Log</h2>
+            <button id="btn-clear-log" class="btn-icon">Clear</button>
+          </div>
+          <div id="event-log" class="event-log">
+            <div class="log-empty">No events yet — waiting for vehicle data.</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Service worker registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+
+  <script src="js/auth.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/esp.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
