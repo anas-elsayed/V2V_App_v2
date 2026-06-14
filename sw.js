@@ -1,34 +1,32 @@
 // ============================================
 // sw.js — Service Worker
-// Caches app files for offline use
 // ============================================
 
 const CACHE_NAME = 'v2v-app-v1';
 
-// Files to cache for offline use
+// Only cache files that actually exist
 const FILES_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/js/app.js',
-  '/js/auth.js',
-  '/js/map.js',
-  '/js/esp.js',
-  '/manifest.json',
-  '/icons/icon.png'
+  '/V2V_App_v2/',
+  '/V2V_App_v2/index.html',
+  '/V2V_App_v2/css/style.css',
+  '/V2V_App_v2/js/app.js',
+  '/V2V_App_v2/js/auth.js',
+  '/V2V_App_v2/js/esp.js',
+  '/V2V_App_v2/js/map.js',
+  '/V2V_App_v2/manifest.json'
 ];
 
-// Install — cache all files
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(FILES_TO_CACHE);
+    }).catch(err => {
+      console.log('Cache install skipped:', err);
     })
   );
   self.skipWaiting();
 });
 
-// Activate — clean old caches
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -41,11 +39,8 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch — serve from cache if available
 self.addEventListener('fetch', event => {
-  // Only cache same-origin requests
   if (!event.request.url.startsWith(self.location.origin)) return;
-
   event.respondWith(
     caches.match(event.request).then(cached => {
       return cached || fetch(event.request);
