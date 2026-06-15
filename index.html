@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0A0F1E" />
   <meta name="description" content="V2V Road Safety System — Vehicle to Vehicle Communication" />
-  <title>V2V Safety</title>
+
+  <!-- Edit 17: updated title -->
+  <title>V2V Road Safety System</title>
 
   <!-- PWA manifest -->
   <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icons/icon.png" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -18,13 +19,13 @@
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Google Maps -->
-<script>
-  (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("language","en");a.src=`https://maps.${c}apis.com/maps/api/js?`+e;a.onerror=()=>n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a);d[l]=f}));d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n));})({
-    key: "AIzaSyDz9sHM2tAWkrWcXcCr4XVfORoMNZEn8WY",
-    v: "weekly",
-  });
-</script>
+  <!-- Google Maps — Edit 21: updated loader -->
+  <script>
+    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("language","en");a.src=`https://maps.${c}apis.com/maps/api/js?`+e;a.onerror=()=>n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a);d[l]=f}));d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n));})({
+      key: "AIzaSyDz9sHM2tAWkrWcXcCr4XVfORoMNZEn8WY",
+      v: "weekly",
+    });
+  </script>
 
   <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -39,17 +40,28 @@
       </div>
 
       <div class="login-card">
+
+        <!-- Edit 3: login icon -->
+        <img src="icons/login.png" class="login-icon" alt="Login">
         <h1>Sign in</h1>
         <p class="login-hint">Enter your credentials to access the vehicle dashboard.</p>
 
+        <!-- Edit 1: email with icon -->
         <div class="field">
           <label for="email">Email</label>
-          <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+          <div class="input-icon">
+            <img src="icons/email.png" class="field-icon" alt="">
+            <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+          </div>
         </div>
 
+        <!-- Edit 2: password with icon -->
         <div class="field">
           <label for="password">Password</label>
-          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+          <div class="input-icon">
+            <img src="icons/password.png" class="field-icon" alt="">
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+          </div>
         </div>
 
         <div id="login-error" class="error-msg hidden"></div>
@@ -66,18 +78,33 @@
     <!-- Top bar -->
     <header class="topbar">
       <div class="topbar-left">
-        <span class="topbar-logo">V2V</span>
+        <!-- Edit 18: logo with image -->
+        <div class="logo-box">
+          <img src="icons/logo.png" class="logo-img" alt="V2V">
+          <span class="topbar-logo">V2V</span>
+        </div>
         <span id="status-badge" class="status-badge idle">IDLE</span>
       </div>
       <div class="topbar-right">
-        <span id="user-email" class="user-email"></span>
-        <button id="btn-logout" class="btn-icon">Sign out</button>
+        <!-- Edit 4: user box with icon -->
+        <div class="user-box">
+          <img src="icons/user.png" class="user-icon" alt="">
+          <span id="user-email" class="user-email"></span>
+        </div>
+        <!-- Edit 14: logout with icon -->
+        <button id="btn-logout" class="btn-icon">
+          <img src="icons/logout.png" class="mini-icon" alt="">
+          Sign out
+        </button>
       </div>
     </header>
 
-    <!-- Alert banner — hidden by default -->
+    <!-- Alert banner -->
     <div id="alert-banner" class="alert-banner hidden">
-      <div class="alert-icon">⚠️</div>
+      <!-- Edit 15: warning icon -->
+      <div class="alert-icon">
+        <img src="icons/warning.png" class="alert-img" alt="Warning">
+      </div>
       <div class="alert-text">
         <span id="alert-title" class="alert-title"></span>
         <span id="alert-desc" class="alert-desc"></span>
@@ -85,10 +112,13 @@
       <button id="alert-close" class="alert-close">✕</button>
     </div>
 
-    <!-- Accident overlay — hidden by default -->
+    <!-- Accident overlay -->
     <div id="accident-overlay" class="accident-overlay hidden">
       <div class="accident-card">
-        <div class="accident-icon">🚨</div>
+        <!-- Edit 16: accident icon -->
+        <div class="accident-icon">
+          <img src="icons/accident.png" class="accident-img" alt="Accident">
+        </div>
         <h2>Accident Detected</h2>
         <p>Car-1 has stopped. Emergency services have been notified.</p>
         <div id="accident-location" class="accident-location"></div>
@@ -106,7 +136,11 @@
         <div class="card" id="card-auth">
           <div class="card-header">
             <span class="card-label">Step 1</span>
-            <h2 class="card-title">Driver Authentication</h2>
+            <!-- Edit 5: fingerprint icon in title -->
+            <h2 class="card-title">
+              <img src="icons/fingerprint.png" class="title-icon" alt="">
+              Driver Authentication
+            </h2>
           </div>
           <p class="card-desc">Place your finger on the sensor to verify identity before starting.</p>
           <div id="fingerprint-area" class="fingerprint-area">
@@ -116,7 +150,6 @@
                 <path d="M32 8C44.15 8 54 17.85 54 30C54 38 49.5 44.9 43 48.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
                 <path d="M32 18C25.37 18 20 23.37 20 30C20 36.63 25.37 42 32 42" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
                 <path d="M32 18C38.63 18 44 23.37 44 30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M32 28V32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
                 <circle cx="32" cy="30" r="3" fill="currentColor"/>
               </svg>
             </div>
@@ -131,7 +164,11 @@
         <div class="card" id="card-destination">
           <div class="card-header">
             <span class="card-label">Step 2</span>
-            <h2 class="card-title">Set Destination</h2>
+            <!-- Edit 6: destination icon -->
+            <h2 class="card-title">
+              <img src="icons/destination.png" class="title-icon" alt="">
+              Set Destination
+            </h2>
           </div>
           <div class="field">
             <input type="text" id="destination-input" placeholder="Enter destination address..." />
@@ -145,28 +182,44 @@
         <div class="card" id="card-start">
           <div class="card-header">
             <span class="card-label">Step 3</span>
-            <h2 class="card-title">Start Vehicle</h2>
+            <!-- Edit 7: vehicle control icon -->
+            <h2 class="card-title">
+              <img src="icons/esp32.png" class="title-icon" alt="">
+              Vehicle Control
+            </h2>
           </div>
           <p class="card-desc">Both vehicles will begin moving after confirmation.</p>
 
           <div class="field">
-            <label for="esp-ip">Car-1 IP Address</label>
+            <!-- Edit 8: wifi icon in label -->
+            <label for="esp-ip">
+              <img src="icons/wifi.png" class="mini-icon" alt="">
+              Car-1 IP Address
+            </label>
             <input type="text" id="esp-ip" placeholder="192.168.1.x" value="192.168.1.100" />
           </div>
 
+          <!-- Edit 9: start button with icon -->
           <button id="btn-start" class="btn-primary btn-start" disabled>
-            <span class="btn-start-icon">▶</span>
+            <img src="icons/start.png" class="btn-icon-img" alt="">
             Start Convoy
           </button>
+
+          <!-- Edit 10: stop button with icon -->
           <button id="btn-stop" class="btn-danger hidden">
-            ■ Emergency Stop
+            <img src="icons/stop.png" class="btn-icon-img" alt="">
+            Emergency Stop
           </button>
         </div>
 
         <!-- Vehicle status card -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Vehicle Status</h2>
+            <!-- Edit 11: car2 icon -->
+            <h2 class="card-title">
+              <img src="icons/car2.png" class="title-icon" alt="">
+              Vehicle Status
+            </h2>
           </div>
           <div class="status-grid">
             <div class="status-item">
@@ -190,11 +243,15 @@
 
       </div>
 
-      <!-- RIGHT COLUMN — Map -->
+      <!-- RIGHT COLUMN -->
       <div class="right-col">
         <div class="card map-card">
           <div class="card-header">
-            <h2 class="card-title">Live GPS Tracking</h2>
+            <!-- Edit 12: map icon -->
+            <h2 class="card-title">
+              <img src="icons/map.png" class="title-icon" alt="">
+              Live GPS Tracking
+            </h2>
             <span id="gps-coords" class="gps-coords">Waiting for signal...</span>
           </div>
           <div id="map" class="map-container"></div>
@@ -203,7 +260,11 @@
         <!-- Event log -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Event Log</h2>
+            <!-- Edit 13: log icon -->
+            <h2 class="card-title">
+              <img src="icons/log.png" class="title-icon" alt="">
+              Event Log
+            </h2>
             <button id="btn-clear-log" class="btn-icon">Clear</button>
           </div>
           <div id="event-log" class="event-log">
@@ -215,7 +276,6 @@
     </main>
   </div>
 
-  <!-- Service worker registration -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');

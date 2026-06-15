@@ -4,7 +4,6 @@
 
 const CACHE_NAME = 'v2v-app-v2';
 
-// Only cache files that actually exist
 const FILES_TO_CACHE = [
   '/V2V_App_v2/',
   '/V2V_App_v2/index.html',
@@ -21,7 +20,7 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(FILES_TO_CACHE);
     }).catch(err => {
-      console.log('Cache install skipped:', err);
+      console.log('Cache skipped:', err);
     })
   );
   self.skipWaiting();

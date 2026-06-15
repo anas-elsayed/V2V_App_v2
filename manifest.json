@@ -1,7 +1,7 @@
 {
   "name": "V2V Road Safety System",
   "short_name": "V2V Safety",
-  "description": "Vehicle-to-Vehicle communication dashboard",
+  "description": "Vehicle-to-Vehicle communication dashboard for road safety",
   "start_url": "/V2V_App_v2/",
   "display": "standalone",
   "background_color": "#0A0F1E",

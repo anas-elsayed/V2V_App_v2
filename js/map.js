@@ -1,6 +1,7 @@
 // ============================================
 // map.js — Google Maps live GPS tracking
 // Uses AdvancedMarkerElement (non-deprecated)
+// Edit 21: car1 icon on map marker
 // ============================================
 
 let map = null;
@@ -23,21 +24,16 @@ async function initMap() {
     fullscreenControl: true
   });
 
-  // Car-1 marker — blue dot
-  const car1Dot = document.createElement('div');
-  car1Dot.style.cssText = `
-    width: 18px; height: 18px;
-    background: #2563EB;
-    border: 3px solid #BFDBFE;
-    border-radius: 50%;
-    box-shadow: 0 0 8px rgba(37,99,235,0.6);
-  `;
+  // Edit 21 — Car-1 marker using car1.png icon
+  const car1El = document.createElement('img');
+  car1El.src = 'icons/car1.png';
+  car1El.style.cssText = 'width:40px; height:40px;';
 
   car1Marker = new AdvancedMarkerElement({
     map,
     position: { lat: 30.0444, lng: 31.2357 },
     title: 'Car-1',
-    content: car1Dot
+    content: car1El
   });
 
   mapReady = true;
@@ -76,12 +72,14 @@ async function setDestinationOnMap(lat, lng, label) {
 
 function flashAccidentMarker() {
   if (!mapReady || !car1Marker) return;
-  let isRed = false;
-  const dot = car1Marker.content;
+  const el = car1Marker.content;
+  let visible = true;
   const interval = setInterval(() => {
-    isRed = !isRed;
-    dot.style.background = isRed ? '#DC2626' : '#FF6B6B';
-    dot.style.boxShadow = `0 0 12px rgba(220,38,38,0.8)`;
+    visible = !visible;
+    el.style.opacity = visible ? '1' : '0.2';
   }, 400);
-  setTimeout(() => clearInterval(interval), 10000);
+  setTimeout(() => {
+    clearInterval(interval);
+    el.style.opacity = '1';
+  }, 10000);
 }

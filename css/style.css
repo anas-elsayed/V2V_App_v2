@@ -1,6 +1,6 @@
 /* =============================================
    V2V Safety App — Stylesheet
-   Dark automotive theme
+   Dark automotive theme + Edit 22 icon styles
    ============================================= */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,10 +47,7 @@ body {
   background: radial-gradient(ellipse at 50% 0%, #1a2744 0%, var(--bg) 70%);
 }
 
-.logo-mark {
-  text-align: center;
-  margin-bottom: 32px;
-}
+.logo-mark { text-align: center; margin-bottom: 32px; }
 
 .logo-v {
   font-family: 'Space Grotesk', sans-serif;
@@ -84,17 +81,14 @@ body {
   margin-bottom: 6px;
 }
 
-.login-hint {
-  color: var(--text2);
-  font-size: 13px;
-  margin-bottom: 24px;
-}
+.login-hint { color: var(--text2); font-size: 13px; margin-bottom: 24px; }
 
 /* ---- FIELDS ---- */
 .field { margin-bottom: 16px; }
 
 .field label {
-  display: block;
+  display: flex;
+  align-items: center;
   font-size: 12px;
   font-weight: 500;
   color: var(--text2);
@@ -132,6 +126,11 @@ body {
   cursor: pointer;
   transition: background 0.2s, opacity 0.2s;
   margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
 }
 
 .btn-primary:hover:not(:disabled) { background: var(--accent2); }
@@ -163,6 +162,10 @@ body {
   font-weight: 600;
   cursor: pointer;
   margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   transition: opacity 0.2s;
 }
 
@@ -177,6 +180,9 @@ body {
   padding: 4px 8px;
   border-radius: 4px;
   transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .btn-icon:hover { color: var(--text); }
@@ -251,9 +257,8 @@ body {
   to   { transform: translateY(0); opacity: 1; }
 }
 
-.alert-icon { font-size: 20px; }
 .alert-text { flex: 1; }
-.alert-title { font-weight: 600; font-size: 14px; display: block; }
+.alert-title { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; }
 .alert-desc  { font-size: 12px; color: var(--text2); display: block; }
 .alert-close { background: none; border: none; color: var(--text2); font-size: 16px; cursor: pointer; padding: 4px; }
 
@@ -281,12 +286,7 @@ body {
   text-align: center;
 }
 
-.accident-icon { font-size: 48px; margin-bottom: 16px; animation: pulse 1s infinite; }
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
+.accident-icon { margin-bottom: 16px; }
 
 .accident-card h2 {
   font-family: 'Space Grotesk', sans-serif;
@@ -333,7 +333,7 @@ main.dashboard-grid {
 
 .card-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 14px;
   gap: 8px;
@@ -356,6 +356,9 @@ main.dashboard-grid {
   font-size: 15px;
   font-weight: 600;
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .card-desc { font-size: 13px; color: var(--text2); margin-bottom: 16px; }
@@ -393,7 +396,7 @@ main.dashboard-grid {
 .fingerprint-area.scanning .fp-icon { color: var(--accent2); }
 .fingerprint-area.verified .fp-icon { color: var(--success); }
 
-.fp-label { font-size: 13px; color: var(--text2); }
+.fp-label { font-size: 13px; color: var(--text2); display: flex; align-items: center; justify-content: center; gap: 6px; }
 
 .auth-status {
   display: flex;
@@ -421,14 +424,8 @@ main.dashboard-grid {
 .btn-start {
   font-size: 15px;
   padding: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
   margin-top: 14px;
 }
-
-.btn-start-icon { font-size: 12px; }
 
 /* ---- STATUS GRID ---- */
 .status-grid {
@@ -452,11 +449,7 @@ main.dashboard-grid {
   letter-spacing: 0.05em;
 }
 
-.status-value {
-  font-size: 13px;
-  font-weight: 600;
-}
-
+.status-value { font-size: 13px; font-weight: 600; }
 .status-value.idle    { color: var(--text2); }
 .status-value.running { color: #4ADE80; }
 .status-value.alert   { color: #FCD34D; }
@@ -508,7 +501,6 @@ main.dashboard-grid {
 .log-time { color: var(--text3); white-space: nowrap; font-family: monospace; }
 .log-msg  { color: var(--text); flex: 1; }
 
-/* ---- DEST STATUS ---- */
 .dest-status {
   display: flex;
   align-items: center;
@@ -521,3 +513,102 @@ main.dashboard-grid {
 
 /* ---- HIDDEN ---- */
 .hidden { display: none !important; }
+
+/* ============================================
+   Edit 22 — Icon styles
+   ============================================ */
+
+.login-icon {
+  width: 70px;
+  height: 70px;
+  display: block;
+  margin: 0 auto 15px;
+}
+
+.title-icon {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.field-icon {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.input-icon {
+  position: relative;
+}
+
+.input-icon input {
+  padding-left: 42px;
+}
+
+.btn-icon-img {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.mini-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.alert-img {
+  width: 32px;
+  height: 32px;
+}
+
+.accident-img {
+  width: 80px;
+  height: 80px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.success-icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+.danger-small {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+}

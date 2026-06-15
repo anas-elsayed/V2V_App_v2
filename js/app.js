@@ -1,15 +1,14 @@
 // ============================================
 // app.js — Main application logic
-// Handles all UI interactions and state
+// Edit 19: success icon in fingerprint verified
+// Edit 20: danger icon in alert 2 title
 // ============================================
 
-// ---- STATE ----
 let isAuthenticated = false;
 let fingerprintDone = false;
 let destinationSet  = false;
 let convoyRunning   = false;
 
-// ---- DOM ELEMENTS ----
 const screenLogin     = document.getElementById('screen-login');
 const screenDashboard = document.getElementById('screen-dashboard');
 const btnLogin        = document.getElementById('btn-login');
@@ -47,16 +46,12 @@ const btnClearLog     = document.getElementById('btn-clear-log');
 function showScreen(name) {
   screenLogin.classList.add('hidden');
   screenDashboard.classList.add('hidden');
-
-  if (name === 'login') {
-    screenLogin.classList.remove('hidden');
-  } else if (name === 'dashboard') {
-    screenDashboard.classList.remove('hidden');
-  }
+  if (name === 'login') screenLogin.classList.remove('hidden');
+  if (name === 'dashboard') screenDashboard.classList.remove('hidden');
 }
 
 // ============================================
-// LOGIN / REGISTER
+// LOGIN
 // ============================================
 btnLogin.addEventListener('click', async () => {
   const email    = document.getElementById('email').value.trim();
@@ -80,6 +75,9 @@ btnLogin.addEventListener('click', async () => {
   }
 });
 
+// ============================================
+// REGISTER
+// ============================================
 btnRegister.addEventListener('click', async () => {
   const email    = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
@@ -94,10 +92,11 @@ btnRegister.addEventListener('click', async () => {
 
   try {
     await register(email, password);
-    showLoginError('Account created — you can now sign in.');
-    loginError.style.background = '#0A2A0A';
-    loginError.style.borderColor = '#16A34A';
-    loginError.style.color = '#86EFAC';
+    loginError.classList.remove('hidden');
+    loginError.style.background   = '#0A2A0A';
+    loginError.style.borderColor  = '#16A34A';
+    loginError.style.color        = '#86EFAC';
+    loginError.textContent        = 'Account created — you can now sign in.';
   } catch (err) {
     showLoginError(err.message || 'Registration failed.');
   } finally {
@@ -108,6 +107,9 @@ btnRegister.addEventListener('click', async () => {
 
 function showLoginError(msg) {
   loginError.textContent = msg;
+  loginError.style.background  = '';
+  loginError.style.borderColor = '';
+  loginError.style.color       = '';
   loginError.classList.remove('hidden');
 }
 
@@ -126,38 +128,40 @@ btnLogout.addEventListener('click', async () => {
   stopGPSPolling();
   stopAlertPolling();
   await logout();
-  isAuthenticated  = false;
-  fingerprintDone  = false;
-  destinationSet   = false;
-  convoyRunning    = false;
+  isAuthenticated = false;
+  fingerprintDone = false;
+  destinationSet  = false;
+  convoyRunning   = false;
   btnStart.disabled = true;
   showScreen('login');
 });
 
 // ============================================
-// FINGERPRINT SIMULATION
+// FINGERPRINT — Edit 19: success icon
 // ============================================
 fpArea.addEventListener('click', () => {
   if (fingerprintDone) return;
 
-  // Scanning animation
   fpArea.classList.add('scanning');
   fpLabel.textContent = 'Scanning...';
 
   setTimeout(() => {
     fpArea.classList.remove('scanning');
     fpArea.classList.add('verified');
-    fpLabel.textContent = '✓ Verified';
+
+    // Edit 19 — success icon in label
+    fpLabel.innerHTML =
+      '<img src="icons/success.png" class="success-icon" alt=""> Verified';
+
     authStatus.classList.remove('hidden');
     fingerprintDone = true;
-
     addLogEntry('success', 'Driver identity verified via fingerprint');
     checkStartReady();
-  }, 2000); // 2 second scan simulation
+  }, 2000);
 });
 
 // ============================================
-// DESTINATION INPUT
+// DESTINATION
 // ============================================
 destInput.addEventListener('change', () => {
   const val = destInput.value.trim();
@@ -167,7 +171,6 @@ destInput.addEventListener('change', () => {
   destName.textContent = val;
   destStatus.classList.remove('hidden');
 
-  // If Google Maps is ready — geocode the address and show pin
   if (typeof google !== 'undefined' && mapReady) {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({ address: val }, (results, status) => {
@@ -183,10 +186,6 @@ destInput.addEventListener('change', () => {
   checkStartReady();
 });
 
-// ============================================
-// CHECK IF START BUTTON SHOULD BE ENABLED
-// Both fingerprint and destination must be done
-// ============================================
 function checkStartReady() {
   btnStart.disabled = !(fingerprintDone && destinationSet);
 }
@@ -196,23 +195,16 @@ function checkStartReady() {
 // ============================================
 btnStart.addEventListener('click', async () => {
   convoyRunning = true;
-
-  // Update UI
   btnStart.classList.add('hidden');
   btnStop.classList.remove('hidden');
   setStatusBadge('running');
   setVehicleStatus('car1', 'running', 'Moving');
   setVehicleStatus('car2', 'running', 'Moving');
-
   addLogEntry('success', 'Convoy started — both vehicles moving');
 
-  // Send start command to ESP32
   const ok = await sendCommand('START');
-  if (!ok) {
-    addLogEntry('warning', 'ESP32 not reachable — cars may have started manually');
-  }
+  if (!ok) addLogEntry('warning', 'ESP32 not reachable — check WiFi');
 
-  // Start polling GPS and alerts
   startGPSPolling();
   startAlertPolling();
 });
@@ -222,23 +214,19 @@ btnStart.addEventListener('click', async () => {
 // ============================================
 btnStop.addEventListener('click', async () => {
   convoyRunning = false;
-
   btnStop.classList.add('hidden');
   btnStart.classList.remove('hidden');
   setStatusBadge('idle');
   setVehicleStatus('car1', 'idle', 'Stopped');
   setVehicleStatus('car2', 'idle', 'Stopped');
-
   stopGPSPolling();
   stopAlertPolling();
-
   await sendCommand('STOP');
   addLogEntry('info', 'Convoy stopped by driver');
 });
 
 // ============================================
-// SHOW ALERT BANNER
-// level 1 = warning, level 2 = danger
+// SHOW ALERT — Edit 20: danger icon in alert 2
 // ============================================
 function showAlert(level, obstacleID) {
   const obstacleNames = { 1: 'Road Bump', 2: 'Person', 3: 'Vehicle' };
@@ -257,12 +245,16 @@ function showAlert(level, obstacleID) {
 
   if (level === 2) {
     alertBanner.classList.add('danger-alert');
-    alertTitle.textContent = '🚨 Alert 2 — Auto Response Triggered';
-    alertDesc.textContent  = `Car-2 automatically slowing down. ${name} confirmed ahead.`;
+
+    // Edit 20 — danger icon in alert 2 title
+    alertTitle.innerHTML =
+      '<img src="icons/danger.png" class="danger-small" alt=""> Alert 2 — Auto Response Triggered';
+
+    alertDesc.textContent    = `Car-2 automatically slowing down. ${name} confirmed ahead.`;
     alertLevelEl.textContent = 'Alert 2';
     alertLevelEl.className   = 'status-value danger';
     setVehicleStatus('car2', 'alert', 'Auto-slow');
-    addLogEntry('danger', `Alert 2: Car-2 auto response — motors reduced, buzzer ON`);
+    addLogEntry('danger', 'Alert 2: Car-2 auto response — motors reduced, buzzer ON');
     setStatusBadge('alert');
   }
 
@@ -270,19 +262,16 @@ function showAlert(level, obstacleID) {
 }
 
 // ============================================
-// SHOW ACCIDENT OVERLAY
+// ACCIDENT OVERLAY
 // ============================================
 function showAccident(lat, lng) {
   accidentOverlay.classList.remove('hidden');
-
   const coords = `${lat ?? 'Unknown'}, ${lng ?? 'Unknown'}`;
   accidentLoc.textContent = `GPS: ${coords}`;
-
   if (lat && lng) {
     accidentLink.href = `https://maps.google.com/?q=${lat},${lng}`;
     flashAccidentMarker();
   }
-
   setStatusBadge('danger');
   setVehicleStatus('car1', 'danger', 'Accident');
   addLogEntry('danger', `ACCIDENT: Car-1 stopped at ${coords}`);
@@ -293,9 +282,6 @@ accidentDismiss.addEventListener('click', () => {
   accidentOverlay.classList.add('hidden');
 });
 
-// ============================================
-// CLOSE ALERT BANNER
-// ============================================
 alertClose.addEventListener('click', () => {
   alertBanner.classList.add('hidden');
 });
@@ -320,7 +306,6 @@ function setVehicleStatus(car, state, label) {
 // EVENT LOG
 // ============================================
 function addLogEntry(type, message) {
-  // Remove empty placeholder
   const empty = eventLog.querySelector('.log-empty');
   if (empty) empty.remove();
 
@@ -331,14 +316,8 @@ function addLogEntry(type, message) {
     <span class="log-time">${time}</span>
     <span class="log-msg">${message}</span>
   `;
-
-  // Newest on top
   eventLog.insertBefore(item, eventLog.firstChild);
-
-  // Keep max 50 entries
-  while (eventLog.children.length > 50) {
-    eventLog.removeChild(eventLog.lastChild);
-  }
+  while (eventLog.children.length > 50) eventLog.removeChild(eventLog.lastChild);
 }
 
 btnClearLog.addEventListener('click', () => {
@@ -346,17 +325,13 @@ btnClearLog.addEventListener('click', () => {
 });
 
 // ============================================
-// CHECK EXISTING SESSION ON PAGE LOAD
-// If user is already logged in — go to dashboard
+// CHECK SESSION ON LOAD
 // ============================================
 window.addEventListener('load', async () => {
   try {
     const user = await getUser();
-    if (user) {
-      onLoginSuccess(user);
-    } else {
-      showScreen('login');
-    }
+    if (user) onLoginSuccess(user);
+    else showScreen('login');
   } catch {
     showScreen('login');
   }
