@@ -170,12 +170,17 @@
               Set Destination
             </h2>
           </div>
-          <div class="field">
+          <div class="field dest-field-row">
             <input type="text" id="destination-input" placeholder="Enter destination address..." />
+            <button id="btn-use-location" class="btn-location" title="Use my current location">
+              <img src="icons/destination.png" class="btn-location-icon" alt="locate">
+              Use my location
+            </button>
           </div>
           <div id="dest-status" class="dest-status hidden">
             <span class="auth-check">✓</span> <span id="dest-name"></span>
           </div>
+          <div id="dest-coords" class="dest-coords hidden"></div>
         </div>
 
         <!-- Start card -->

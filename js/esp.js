@@ -64,7 +64,7 @@ function startAlertPolling() {
       const data = await response.json();
       if (data.alert === 1) showAlert(1, data.obstacleID);
       if (data.alert === 2) showAlert(2, data.obstacleID);
-      if (data.accident)   showAccident(data.lat, data.lng);
+      if (data.accident)   showAccident(data.lat, data.lng, data.mapLink);
     } catch (err) { /* silent */ }
   }, 1000);
 }

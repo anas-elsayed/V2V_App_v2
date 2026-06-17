@@ -511,6 +511,44 @@ main.dashboard-grid {
   margin-top: 8px;
 }
 
+.dest-coords {
+  font-size: 11px;
+  color: var(--text2);
+  font-family: monospace;
+  margin-top: 4px;
+}
+
+.dest-field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-location {
+  background: var(--bg3);
+  color: var(--accent2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.btn-location:hover { border-color: var(--accent2); background: #131d33; }
+.btn-location:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-location-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
 /* ---- HIDDEN ---- */
 .hidden { display: none !important; }
 
